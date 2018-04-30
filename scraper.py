@@ -76,8 +76,28 @@ print(allTrends)
 # get all tweets for a specific user (also using a specific hashtags)
 c = twint.Config()
 c.Username = "delgado_ahmed"
-#c.Search = allTrends[0] #Seach for specific hashtag name. In this case it used the trending list to fetsh for that specific hashtag. you can also search for multiple hashtags using advance query
-c.Format = "{tweet}" #"username: {username} | hashtags: {hashtags} | location: {location} | Tweet id: {id} | Tweet: {tweet}"
+c.Search = "#hahaha" #Seach for specific hashtag name. In this case it used the trending list to fetsh for that specific hashtag. you can also search for multiple hashtags using advance query
+'''
+Options:
+	id = ""
+	date = ""
+	datestamp = ""
+	time = ""
+	timestamp = ""
+	timezone = ""
+	user_id = ""
+	username = ""
+	tweet = "" # Text
+	replies = "0"
+	likes = "0"
+	retweets = "0"
+	hashtags = ""
+	location = ""
+'''
+
+
+c.Format = "{tweet}"
+
 # Run
 twint.Search(c)
 
