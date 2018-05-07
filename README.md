@@ -14,7 +14,9 @@ Inspect get-pip.py for any malevolence. Then run the following:
 
 The easiest way to install all the requirments to run the script
 is by using pip/easy_install to pull it from PyPI:
-
+    
+    git clone https://github.com/kalachkar/twitter-CandC.git
+    cd twitter-CandC/
     sudo pip3 install -r requirements.txt
 
 Python 3.5/3.6 are supported.
@@ -22,6 +24,7 @@ Python 3.5/3.6 are supported.
 I've used the following repositories:
 
 1- TWINT - Twitter Intelligence Tool (https://github.com/haccer/twint)
+
 2- Tweepy: Twitter for Python! (https://github.com/tweepy/tweepy)
     
 
