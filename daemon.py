@@ -19,12 +19,46 @@ def isEnglish(t):
 def isCommand(tweet):
 	return True if tweet.count('   ') > 0 else False
 
+def zeroRemover(x):
+	l = x.split('.')
+	
+	for i in range(0, len(l)):
+		if len(l[i]) == 4:
+			l[i] = l[i].replace('00', '0', 1)
+		elif len(l[i])== 5:
+			l[i] = l[i].replace('00', '', 1)
+	
+	ip = '.'.join(l)	
+	
+	return ip
+
+#get a clear IP address from a tweet's emojis
+def toIP(z):
+	lss = re.findall('<.*>', z)
+	emojiIp = str(lss[0]).replace('> ', '>.')
+	#print(emojiIp)
+	for key, value in emojisDic.items():
+		emojiIp = emojiIp.replace(key, str(value))
+
+	return zeroRemover(emojiIp)
+
+#Make a command from a tweet: <.*>
+'''def commandMaker(tweet):
+	digitByDigit = list(tweet)
+	c = 0
+	while c < len(digitByDigit):
+		if (digitByDigit[c] == '<'):
+
+		else:
+			c += 1
+'''
+	
 
 # Get all trends from trends24.in for a specific country
 # using BeautifulSoup (bs4)
 #
 # Pick which table you want to work with at trends24
-trendsTime = 3 # specify the trend time in hours ( 0: current trends in this hour, 1: an hour ago, 2: two hours ago, and so on)
+trendsTime = 5 # specify the trend time in hours ( 0: current trends in this hour, 1: an hour ago, 2: two hours ago, and so on)
 countryName = 'netherlands' #keep it empty for worldwide or specify country. such as united-kingdom, netherlands, and so on
 pageLink = 'https://trends24.in/' + countryName + '/'
 pageResponse = requests.get(pageLink, timeout=5)
@@ -47,9 +81,9 @@ searchQuery = hashtagTrends[0] + " OR " + hashtagTrends[1] + " OR " + hashtagTre
 # Get all tweets for a specific user (for a specific hashtags)
 c = twint.Config()
 c.Username = "delgado_ahmed"
-c.Search =  searchQuery #Seach for specific hashtag name. In this case it used the trending list to fetsh for that specific hashtag. you can also search for multiple hashtags using advance query
+c.Search =  '#weekend'  #Seach for specific hashtag name. In this case it used the trending list to fetsh for that specific hashtag. you can also search for multiple hashtags using advance query
 c.Format = "{tweet}"
-c.Since = TODAY #Specify the tweet time (today)
+#c.Since = TODAY #Specify the tweet time (today)
 
 #c.Lang = "en" #specify tweet language 
 c.Output = "tweets.txt"
@@ -58,6 +92,7 @@ c.Output = "tweets.txt"
 twint.Search(c)
 
 #After output all the tweets to a file, I only take the last one
+#FIX ME to open only if i exists
 with open('tweets.txt') as f:
     lastTweet = f.readline() #get the last tweet
     os.remove('tweets.txt')
@@ -65,6 +100,9 @@ with open('tweets.txt') as f:
 
 print(lastTweet)
 
+
+
+print(toIP(z))
 #run commands on server
 #command = 'ping -c 4 '+ x + ' > ' + x + '.txt'
 #command = 'dig ' + x + ' > ' + x + '.txt'
