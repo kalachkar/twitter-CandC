@@ -89,9 +89,9 @@ searchQuery = hashtagTrends[0] + " OR " + \
 
 # list of command to execute by substituting the <IP-Address> with the
 # actual IP:
-commandsList = {hashtagTrends[0]: 'echo \'The guy with this ip-address: <IP-Address> is a Legend! Just a Legend !!\' > legendQuoteofTheDay.txt',
-                hashtagTrends[1]: 'dig <IP-Address> > dig_for_<IP-Address>.txt',
-                hashtagTrends[2]: 'nslookup <IP-Address> > nslookup_for_<IP-Address>.txt'}
+commandsList = {hashtagTrends[0]: 'echo \'The guy with this ip-address: <IP-Address> is a Legend! Just a Legend !!\' | telegram-send --stdin',
+                hashtagTrends[1]: 'dig <IP-Address> | telegram-send --stdin',
+                hashtagTrends[2]: 'nslookup <IP-Address> | telegram-send --stdin'}
 
 # Get all tweets for a specific user (for a specific hashtags)
 c = twint.Config()
@@ -114,23 +114,28 @@ def commander():
     try:
         with open('tweets.txt') as f:
             lastTweet = f.readline()  # get only the last tweet
-
         if (isCommand(lastTweet)):
+                # write a command for an external file to check if its used
+                # later
             for i in range(0, 3):
                 if hashtagTrends[i] in lastTweet:
                     com = commandsList[hashtagTrends[i]]
                     com = com.replace('<IP-Address>', toIP(lastTweet))
-        #os.remove('tweets.txt')
-    except IOError:
+    except FileNotFoundError:
         print("There is no Tweets for today yet")
 
     return com
 
+
 def main():
-	if (commander() != ' '):
-		print(commander())
-		os.system(commander())
-	else:
-		print('No command has been called !!')
+    if (commander() != ' '):
+        print(commander())
+        os.system(commander())
+    else:
+        print('No command has been called !!')
+
+    # Delete file after finish
+    if os.path.isfile('./tweets.txt'):
+        os.remove('tweets.txt')
 
 main()
