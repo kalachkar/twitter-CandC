@@ -9,3 +9,4 @@ requests_oauthlib
 python-twitter
 twint
 tweepy
+telegram-send
