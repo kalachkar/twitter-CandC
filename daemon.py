@@ -47,7 +47,7 @@ def zeroRemover(x):
     return ip
 
 # get a clear IP address from a tweet's emojis
-
+#double check this (need fixes)
 
 def toIP(z):
     lss = re.findall('<.*>', z)
