@@ -42,9 +42,9 @@ def main():
 		
 		symbolIP = ''
 		
-		if(commandOrder == 1):
+		if(commandOrder == "1"):
 			dic = dic1
-		elif(commandOrder == 2):
+		elif(commandOrder == "2"):
 			dic = dic2
 		else:
 			dic = dic3
