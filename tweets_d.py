@@ -5,12 +5,16 @@ from descriptionToValue import *
 
 # Get Today's date
 TODAY = time.strftime("%Y-%m-%d")
-OLD_COMMAND = ''
 
 #List of commands
-commandsList = {'echo \'The guy with this ip-address: <IP-ADDRESS> is a Legend! Just a Legend !!\' | telegram-send --stdin',
- 				'dig <IP-ADDRESS> | telegram-send --stdin',
-                'nslookup <IP-ADDRESS> | telegram-send --stdin'}
+commandsList = {1 : 'echo \'The guy with this ip-address: <IP-ADDRESS> is a Legend! Just a Legend !!\' | telegram-send --stdin',
+ 				2 : 'dig <IP-ADDRESS> | telegram-send --stdin',
+                3 : 'nslookup <IP-ADDRESS> | telegram-send --stdin'}
+
+
+def findOccurences(s, ch):
+    return [i for i, letter in enumerate(s) if letter == ch]
+
 
 #Check whether the tweet is a command or not (check whether it contains double spaces after or not)
 def isCommand(tweet, OLD_COMMAND):
@@ -22,6 +26,7 @@ def getTrends():
 		t = f.read().strip().split('\n')
 		f.close()
 	return t
+
 
 #Clean the output file every time we make the call
 def fileCleaner():
@@ -42,14 +47,16 @@ def getTweets():
 	twint.Search(c)
 
 def emojiToIP(tweet, dic):
-	lss = re.findall('<.*>', tweet)
-	s = str(lss[0]).replace('>', '>,')
-	emojiIP = s.split(",")
+	emojiIP = []
+	endChars = findOccurences(tweet, '>')
+	for i, startChar in enumerate(findOccurences(tweet, '<')): emojiIP.append(tweet[startChar:endChars[i]+1])
+	#s = lss.replace(">",">,").split(",")
+	#emojiIP = s.split(",")
 	ipAddress = str(dic[emojiIP[0]] + dic[emojiIP[1]]) + "." + str(dic[emojiIP[2]] + dic[emojiIP[3]]) + "." + str(dic[emojiIP[4]] + dic[emojiIP[5]]) + "." + str(dic[emojiIP[6]] + dic[emojiIP[7]])
 	
 	return ipAddress 
 	
-def commander():
+def commander(dic):
 	lastTweet = ''
 	x = ''
 	try:
@@ -58,14 +65,42 @@ def commander():
 		x = emojiToIP(lastTweet, dic1)
 	except FileNotFoundError:
 		print("tweets.txt file not found")
-
 	return x
 
-def main():
-	trends = getTrends()
-	getTweets()
-	print(commander())
 
+def main():
+	OLD_COMMAND = ''
+	trends = getTrends()
+	print(trends)
+	getTweets()
+	com = ''
+	if(os.stat("tweets.txt").st_size != 0):
+		with open('tweets.txt') as f:
+			lastTweet = f.readline()  # get only the last tweet
+			print("zzzz", lastTweet)
+			
+			if(isCommand(lastTweet,OLD_COMMAND)):
+				
+				OLD_COMMAND = lastTweet
+				
+				if(trends[0] in lastTweet):
+					ip = emojiToIP(lastTweet, dic1)
+					com = commandsList[1].replace("<IP-ADDRESS>", ip)
+				elif(trends[1] in lastTweet):
+					ip = emojiToIP(lastTweet, dic2)
+					com = commandsList[2].replace("<IP-ADDRESS>", ip)
+				elif(trends[2] in lastTweet):
+					ip = emojiToIP(lastTweet, dic3)
+					com = commandsList[3].replace("<IP-ADDRESS>", ip)
+				else:
+					print("Command called not in the list")
+			
+			else:
+				print("No command has been called yet!!")
+		os.system(com)
+	else:
+		print("No tweets for today")
+		
 main()
 	
 
