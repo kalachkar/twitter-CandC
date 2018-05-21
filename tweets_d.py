@@ -1,13 +1,13 @@
 #! /usr/bin/python3
 
-import tweepy, twitter, json, twint, requests, re, time, os, sys, subprocess, string
+import tweepy, twitter, json, twint, requests, re, time, os, sys, subprocess, string, time
 from descriptionToValue import *
 
 # Get Today's date
 TODAY = time.strftime("%Y-%m-%d")
 
 #List of commands
-commandsList = {1 : 'echo \'The guy with this ip-address: <IP-ADDRESS> is a Legend! Just a Legend !!\' | telegram-send --stdin',
+commandsList = {1 : 'echo \'This IP address (<IP-ADDRESS>) getting DOS for REAL!\' | telegram-send --stdin',
  				2 : 'dig <IP-ADDRESS> | telegram-send --stdin',
                 3 : 'nslookup <IP-ADDRESS> | telegram-send --stdin'}
 
@@ -70,36 +70,44 @@ def commander(dic):
 
 def main():
 	OLD_COMMAND = ''
-	trends = getTrends()
-	print(trends)
-	getTweets()
-	com = ''
-	if(os.stat("tweets.txt").st_size != 0):
-		with open('tweets.txt') as f:
-			lastTweet = f.readline()  # get only the last tweet
-			print("zzzz", lastTweet)
-			
-			if(isCommand(lastTweet,OLD_COMMAND)):
+
+	#daemonize the script
+	while True:
+		trends = getTrends()
+		print(trends)
+		getTweets()
+		com = ''
+		if(os.stat("tweets.txt").st_size != 0):
+			with open('tweets.txt') as f:
+				lastTweet = f.readline()  # get only the last tweet
+				print("zzzz", lastTweet)
 				
-				OLD_COMMAND = lastTweet
+				if(isCommand(lastTweet,OLD_COMMAND)):
+					
+					OLD_COMMAND = lastTweet
+					
+					if(trends[0] in lastTweet):
+						ip = emojiToIP(lastTweet, dic1)
+						com = commandsList[1].replace("<IP-ADDRESS>", ip)
+						print(com, " has been successfully executed !!")
+					elif(trends[1] in lastTweet):
+						ip = emojiToIP(lastTweet, dic2)
+						com = commandsList[2].replace("<IP-ADDRESS>", ip)
+						print(com, " has been successfully executed !!")
+					elif(trends[2] in lastTweet):
+						ip = emojiToIP(lastTweet, dic3)
+						com = commandsList[3].replace("<IP-ADDRESS>", ip)
+						print(com, " has been successfully executed !!")
+					else:
+						print("Command called not in the list")
 				
-				if(trends[0] in lastTweet):
-					ip = emojiToIP(lastTweet, dic1)
-					com = commandsList[1].replace("<IP-ADDRESS>", ip)
-				elif(trends[1] in lastTweet):
-					ip = emojiToIP(lastTweet, dic2)
-					com = commandsList[2].replace("<IP-ADDRESS>", ip)
-				elif(trends[2] in lastTweet):
-					ip = emojiToIP(lastTweet, dic3)
-					com = commandsList[3].replace("<IP-ADDRESS>", ip)
 				else:
-					print("Command called not in the list")
-			
-			else:
-				print("No command has been called yet!!")
-		os.system(com)
-	else:
-		print("No tweets for today")
+					print("No command has been called yet!!")
+			os.system(com)
+		else:
+			print("No tweets for today")
+		#Specify the delay in seconds between every round
+		time.sleep(60)
 		
 main()
 	
