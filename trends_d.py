@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-import requests, re
+import requests, re, time
 from bs4 import BeautifulSoup
 
 
@@ -17,7 +17,7 @@ def isEnglish(t):
 
 def main():
 	timeInterval = 1 #Pick the time interval from trends24 e.g. ( 0 current hour, 1 past one hour and so on)
-	countryName = 'netherlands' #choose the country e.g. (united-kingdom, netherlands) or keep it empty for world wild
+	countryName = 'united-kingdom' #choose the country e.g. (united-kingdom, netherlands) or keep it empty for world wild
 	page_link = 'https://trends24.in/' + countryName + '/'
 	page_response = requests.get(page_link, timeout=5)
 	page_content = BeautifulSoup(page_response.content, "html.parser")
@@ -35,6 +35,8 @@ def main():
 	  f.write("%s\n" % trend)
 
 
-#call main function
-main()
+#daemonize the script
+while True:
+	main()
+	time.sleep(1800)
 
