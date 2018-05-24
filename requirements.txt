@@ -10,3 +10,4 @@ python-twitter
 twint
 tweepy
 telegram-send
+python-daemon
