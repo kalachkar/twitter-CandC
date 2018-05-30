@@ -1,15 +1,11 @@
 #! /usr/bin/python3
 
-import tweepy, twitter, json, twint, requests, re, time, os, sys, subprocess, string, time
+import os, tweepy, twitter, json, twint, requests, re, time, os, sys, subprocess, string, time, daemon
 from descriptionToValue import *
+from config import *
 
 # Get Today's date
 TODAY = time.strftime("%Y-%m-%d")
-
-#List of commands
-commandsList = {1 : 'echo \'This IP address (<IP-ADDRESS>) getting DOS for REAL!\' | telegram-send --stdin',
- 				2 : 'dig <IP-ADDRESS> | telegram-send --stdin',
-                3 : 'nslookup <IP-ADDRESS> | telegram-send --stdin'}
 
 
 def findOccurences(s, ch):
@@ -38,8 +34,8 @@ def getTweets():
 	trendsList = getTrends()
 	searchQuery = trendsList[0] + " OR " + trendsList[1] + " OR " + trendsList[2]
 	c = twint.Config()
-	c.Username = "delgado_ahmed"
-	#c.Search = searchQuery  # AND ,OR, NOT query to search for trends
+	c.Username = userName
+	c.Search = searchQuery  # AND ,OR, NOT query to search for trends
 	c.Format = "{tweet}"
 	c.Since = TODAY  # Specify the tweet time (today)
 	c.Output = "tweets.txt"
@@ -68,7 +64,7 @@ def commander(dic):
 	return x
 
 
-def main():
+def parser():
 	OLD_COMMAND = ''
 
 	#daemonize the script
@@ -109,7 +105,13 @@ def main():
 		#Specify the delay in seconds between every round
 		time.sleep(60)
 		
-main()
-	
+
+if __name__ == "__main__":
+    here = os.path.dirname(os.path.abspath(__file__))
+    out = open(os.devnull, 'w')
+    with daemon.DaemonContext(working_directory=here, stdout=out):
+        print("starting tweet daemon")
+        parser()
+    print("exiting")
 
 #os.stat("tweets.txt").st_size == 0
